@@ -29,10 +29,17 @@ def image_get():
         book_image_botton.click()
         time.sleep(3)  # 여기까진 성공
 
-        book_url = driver.find_element_by_xpath('/html/body/table/tbody/tr/td/table[2]/tbody/tr/td[2]/table/tbody/tr/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[1]/table/tbody/tr/td/img').get_attribute('src')  # 책 이미지 path url 가져오기
+        book_url = driver.find_element_by_xpath(
+            '/html/body/table/tbody/tr/td/table[2]/tbody/tr/td[2]/table/tbody/tr/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[1]/table/tbody/tr/td/img').get_attribute(
+            'src')  # 책 이미지 path url 가져오기
         count = 1  # 책 이름 (가제)
         urllib.request.urlretrieve(book_url, str(count) + ".jpg")  # 이미지 저장 근데 왜안됨...
         time.sleep(3)
+
+        back_botton = driver.find_element_by_xpath(
+            "/html/body/table/tbody/tr/td/table[1]/tbody/tr/td[3]/a/img")  # x 버튼 이미지 path 탐색
+        back_botton.click()  # 해당 버튼 클릭
+        driver.back()  # 상세 페이지에서 뒤로가기
 
 
 image_get()
