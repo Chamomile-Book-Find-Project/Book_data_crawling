@@ -8,17 +8,18 @@ from selenium.webdriver.common.keys import Keys
 import time
 import urllib.request
 
-image_folder = './book_image'
+image_folder = './한국소설'
 
 if not os.path.isdir(image_folder):
     os.mkdir(image_folder)
 else:
     print('해당 폴더가 존재합니다.')
 
+driver = webdriver.Chrome('./chromedriver')
+driver.get('http://www.kyobobook.co.kr/categoryRenewal/categoryMain.laf?linkClass=0101&mallGb=KOR&orderClick=JAR')
+
 
 def image_get():
-    driver = webdriver.Chrome('./chromedriver')
-    driver.get('http://www.kyobobook.co.kr/categoryRenewal/categoryMain.laf?linkClass=0101&mallGb=KOR&orderClick=JAR')
     for i in range(1, 40, 2):
         elem = driver.find_element_by_xpath(
             f'//*[@id="prd_list_type1"]/li[{i}]/div/div[1]/div[2]/div[1]/a')  # 각 path 접근
@@ -39,7 +40,7 @@ def image_get():
             '/html/body/table/tbody/tr/td/table[2]/tbody/tr/td[2]/table/tbody/tr/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[1]/table/tbody/tr/td/img').get_attribute(
             'src')
 
-        urllib.request.urlretrieve(book_url, f'./book_image/{book_title_2}.jpg')  # 이미지 저장
+        urllib.request.urlretrieve(book_url, f'./{image_folder}/{book_title_2}.jpg')  # 이미지 저장
         time.sleep(3)
 
         back_botton = driver.find_element_by_xpath(
@@ -52,6 +53,13 @@ def image_get():
         driver.back()
         driver.back()
         time.sleep(3)
+
+        if i == 39:
+            next_botton = driver.find_elements_by_css_selector('list_paging')
+            next_botton.send_keys(Keys.ENTER)
+            image_get()
+        else:
+            continue
 
 
 image_get()
