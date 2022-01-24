@@ -43,6 +43,8 @@ def image_get():
     back_botton.send_keys(Keys.ENTER)  # 해당 path에 있는 버튼 클릭
     time.sleep(3)
     driver.switch_to.default_content()  # 해당 프레임 빠져나가기
+
+    # 예시 어쩌구 저ㄱ쩌구
     driver.back()
 
 
