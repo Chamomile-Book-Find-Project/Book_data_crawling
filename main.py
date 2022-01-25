@@ -18,8 +18,19 @@ else:
 driver = webdriver.Chrome('./chromedriver')
 driver.get('http://www.kyobobook.co.kr/categoryRenewal/categoryMain.laf?linkClass=0101&mallGb=KOR&orderClick=JAR')
 
+image_count = 0
+page_index = 12
+
+
+def botton_click():
+    global page_index
+    next_page = driver.find_element_by_xpath(f'//*[@id="eventPaging"]/div/ul/li[{page_index}]/a')
+    next_page.send_keys(Keys.ENTER)
+    time.sleep(3)
+
 
 def image_get():
+    global image_count, page_index
     for i in range(1, 40, 2):
         elem = driver.find_element_by_xpath(
             f'//*[@id="prd_list_type1"]/li[{i}]/div/div[1]/div[2]/div[1]/a')  # 각 path 접근
@@ -33,14 +44,15 @@ def image_get():
 
         book_title_1 = driver.find_element_by_xpath('//*[@id="container"]/div[2]/form/div[1]/h1/strong')
         book_title_2 = book_title_1.text
-        time.sleep(2)
+        time.sleep(3)
+
         driver.switch_to.frame('UXModalIframe')  # 프레임 전환 하여 이미지 상세창으로 이동
 
         book_url = driver.find_element_by_xpath(
             '/html/body/table/tbody/tr/td/table[2]/tbody/tr/td[2]/table/tbody/tr/td/table/tbody/tr[2]/td[2]/table/tbody/tr[1]/td[1]/table/tbody/tr/td/img').get_attribute(
             'src')
 
-        urllib.request.urlretrieve(book_url, f'./{image_folder}/{book_title_2}.jpg')  # 이미지 저장
+        urllib.request.urlretrieve(book_url, f'./{image_folder}/{book_title_2}.jpg')
         time.sleep(3)
 
         back_botton = driver.find_element_by_xpath(
@@ -54,12 +66,32 @@ def image_get():
         driver.back()
         time.sleep(3)
 
-        if i == 39:
-            next_botton = driver.find_elements_by_css_selector('list_paging')
-            next_botton.send_keys(Keys.ENTER)
+        image_count += 1
+        print(f'이미지 수집 진행상황 : {image_count}')
+
+        if image_count == 20:
+            page_index += 1
+            next_page = driver.find_element_by_xpath(f'//*[@id="eventPaging"]/div/ul/li[{page_index}]/a')
+            next_page.send_keys(Keys.ENTER)
+            print(f'page index  : {page_index}')
+            time.sleep(2)
+            image_count = 0
+            print(f'이미지 수집 개수 초기화 : {image_count}')
             image_get()
+
+        elif page_index == 10:
+            turn_of_next_page = driver.find_element_by_xpath('//*[@id="eventPaging"]/div/a[2]')
+            turn_of_next_page.send_keys(Keys.ENTER)
+            time.sleep(2)
+            page_index = 0
+            image_count = 0
+            print(f'page index 초기화 : {page_index}')
+            print(f'이미지 수집 개수 초기화 : {image_count}')
+            image_get()
+
         else:
             continue
 
 
+botton_click()
 image_get()
