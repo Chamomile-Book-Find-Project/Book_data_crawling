@@ -11,8 +11,9 @@ import time
 import urllib.request
 
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import UnexpectedAlertPresentException
 
-image_folder = './한국소설'
+image_folder = './중국소설'
 
 if not os.path.isdir(image_folder):
     os.mkdir(image_folder)
@@ -21,10 +22,10 @@ else:
     print('해당 폴더들이 존재합니다.')
 
 driver = webdriver.Chrome('./chromedriver')
-driver.get('http://www.kyobobook.co.kr/categoryRenewal/categoryMain.laf?linkClass=0101&mallGb=KOR&orderClick=JAR')
+driver.get('http://www.kyobobook.co.kr/categoryRenewal/categoryMain.laf?linkClass=0107&mallGb=KOR&orderClick=JAR')
 
 image_count = 0
-page_index = 10
+page_index = 6
 
 
 def botton_click():
@@ -35,15 +36,15 @@ def botton_click():
 
 
 def next_botton():
+    global page_index, image_count
     turn_of_next_page = driver.find_element_by_xpath('//*[@id="eventPaging"]/div/a[2]')
     turn_of_next_page.send_keys(Keys.ENTER)
     time.sleep(2)
-    page_index = 0
+    page_index = 1
     image_count = 0
     print(f'page index 초기화 : {page_index}')
     print(f'이미지 수집 개수 초기화 : {image_count}')
 
-    return page_index, image_count
 
 
 def image_get():
@@ -86,13 +87,15 @@ def image_get():
         except NoSuchElementException:
             book_title_1 = driver.find_element_by_xpath('//*[@id="container"]/div[2]/form/div[1]/h1/strong')
             book_title_2 = book_title_1.text
-            book_made_1 = driver.find_element_by_xpath('//*[@id="container"]/div[2]/form/div[1]/div[3]/span[3]/a')
-            book_made_2 = book_made_1.text
-            print(f'큰 이미지 수집 필요 : {str(book_title_2)} , 출판사 : {str(book_made_2)}')
+            print(f'큰 이미지 수집 필요 : {str(book_title_2)} ')
             driver.back()
+
+        except UnexpectedAlertPresentException:
+            print('19세 이상입니다.')
 
         image_count += 1
         print(f'이미지 수집 진행상황 : {image_count}')
+
 
         if image_count == 20:
             page_index += 1
@@ -104,7 +107,6 @@ def image_get():
             print(f'이미지 수집 개수 초기화 : {image_count}')
             image_get()
 
-
 botton_click()
-next_botton()
 image_get()
+
