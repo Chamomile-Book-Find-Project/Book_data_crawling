@@ -13,7 +13,7 @@ import urllib.request
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import UnexpectedAlertPresentException
 
-image_folder = './중국소설'
+image_folder = './프랑스소설'
 
 if not os.path.isdir(image_folder):
     os.mkdir(image_folder)
@@ -22,10 +22,10 @@ else:
     print('해당 폴더들이 존재합니다.')
 
 driver = webdriver.Chrome('./chromedriver')
-driver.get('http://www.kyobobook.co.kr/categoryRenewal/categoryMain.laf?linkClass=0107&mallGb=KOR&orderClick=JAR')
+driver.get('http://www.kyobobook.co.kr/categoryRenewal/categoryMain.laf?linkClass=0111&mallGb=KOR&orderClick=JAR')
 
 image_count = 0
-page_index = 6
+page_index = 4
 
 
 def botton_click():
