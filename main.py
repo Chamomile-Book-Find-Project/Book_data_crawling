@@ -13,7 +13,7 @@ import urllib.request
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import UnexpectedAlertPresentException
 
-image_folder = './프랑스소설'
+image_folder = './독일소설'
 
 if not os.path.isdir(image_folder):
     os.mkdir(image_folder)
@@ -22,10 +22,10 @@ else:
     print('해당 폴더들이 존재합니다.')
 
 driver = webdriver.Chrome('./chromedriver')
-driver.get('http://www.kyobobook.co.kr/categoryRenewal/categoryMain.laf?linkClass=0111&mallGb=KOR&orderClick=JAR')
+driver.get('http://www.kyobobook.co.kr/categoryRenewal/categoryMain.laf?linkClass=0112&mallGb=KOR&orderClick=JAR')
 
 image_count = 0
-page_index = 4
+page_index = 10
 
 
 def botton_click():
@@ -48,7 +48,7 @@ def next_botton():
 
 
 def image_get():
-    global image_count, page_index
+    global image_count, page_index, book_url, book_title_2
 
     for i in range(1, 40, 2):
         elem = driver.find_element_by_xpath(
@@ -93,6 +93,21 @@ def image_get():
         except UnexpectedAlertPresentException:
             print('19세 이상입니다.')
 
+        except FileNotFoundError:
+            except_name = 0
+            urllib.request.urlretrieve(book_url, f'./{except_name}.jpg')
+            except_name += 1
+            back_botton = driver.find_element_by_xpath(
+                "/html/body/table/tbody/tr/td/table[1]/tbody/tr/td[3]/a")  # x 버튼 이미지 path 탐색
+            back_botton.send_keys(Keys.ENTER)  # 해당 path에 있는 버튼 클릭
+            time.sleep(3)
+
+            # 오류 생성부분
+            driver.switch_to.default_content()  # 해당 프레임 빠져나가기
+            driver.back()
+            driver.back()
+
+
         image_count += 1
         print(f'이미지 수집 진행상황 : {image_count}')
 
@@ -108,5 +123,6 @@ def image_get():
             image_get()
 
 botton_click()
+next_botton()
 image_get()
 

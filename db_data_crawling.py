@@ -4,11 +4,12 @@ import requests
 from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from bs4 import BeautifulSoup
 
 """"
 1. 해당 부분에서는 화면 밖에 내용을 보여주면 되기에, 큰 이미지까지는 필요없을거라고 판단하였음
 
-수집 데이터  : text : title , 글쓴이 , 출판사 , 키워드 , 판매가 
+수집 데이터  : text : title , 글쓴이 , 출판사, 판매가 
             url : 이미지 url , 상세정보창 url 
 
 DB 저장 순서 : title , 지은이 , 출판사 , 키워드 , 이미지uri , 상세정보창uri 
@@ -27,16 +28,18 @@ driver.get('http://www.kyobobook.co.kr/categoryRenewal/categoryMain.laf?linkClas
 image_count = 0
 page_index = 1
 
-def Text_get():
-    Title_ = driver.find_element_by_css_selector('title').text
+
+
+def Data_get():
+    Title = driver.find_element_by_xpath('//*[@id="container"]/div[2]/form/div[1]/h1/strong').text
     writer = driver.find_element_by_xpath('//*[@id="container"]/div[2]/form/div[1]/div[2]/span[1]/a').text
-    made = driver.find_element_by_xpath('//*[@id="container"]/div[2]/form/div[1]/div[2]/span[3]/a').text
-    price = driver.find_element_by_xpath('//*[@id="container"]/div[2]/form/div[3]/div[1]/ul/li[1]/span[2]/strong').text
+    book_made = driver.find_element_by_xpath('//*[@id="container"]/div[2]/form/div[1]/div[2]/span[3]/a').text
+    sell_price = driver.find_element_by_xpath('//*[@id="container"]/div[2]/form/div[3]/div[1]/ul/li[1]/span[2]/strong').text
+    image_uri = driver.find_element_by_xpath('//*[@id="container"]/div[2]/form/div[2]/div[1]/div/a/img').get_attribute('src')
 
-   """
-   키워드 텍스트 저장에 대한 순차적 고민을 해봐야함 
-   """
-
+    data_info = {"Title":Title, "Writer":writer, "Book_made":book_made,"sell_price":sell_price, "image_uri":image_uri}
+    frame = pd.DataFrame([data_info])
+    frame.to_csv('DB.csv', index_label='index', index=True)
 
 
 
@@ -49,7 +52,7 @@ def move():  # 셀레니움을 이용한 화면 이동
         time.sleep(3)
 
         # 내용 채워야댐 (데이터 수집 내용)
-        Text_get()
+        Data_get()
 
         if image_count == 20:
             page_index += 1
